@@ -62,3 +62,28 @@ with view1:
 with dwn1:
     st.download_button("Get Data",data=data.to_csv().encode("utf-8"),
                        file_name="RetailerSales.csv", mime="text/csv")
+    
+df["Month_Year"] = df["InvoiceDate"].dt.strftime("%b'%y")
+result=df.groupby(by=df["Month_Year"])["TotalSales"].sum().reset_index()
+                                       
+with col5:
+    fig1=px.line(result, x="Month_Year",y="TotalSales",title="Total sales over time",
+                 template="gridon")
+    st.plotly_chart(fig1,use_container_width=True)
+
+with view2:
+    expander=st.expander("Monthly Sales")
+    data=result
+    expander.write(data)
+
+with dwn2:
+    st.download_button("Get Data", data=result.to_csv().encode("utf-8"),
+                       file_name="MonthlySales.csv", mime="text/csv")
+    
+st.divider()
+
+result1=df.groupby(by="state")[["TotalSales","UnitsSold"]].sum().reset_index()
+
+#to add units sold as a line chart on secondary y axis
+fig3 = go.Figure()
+fig3.add_trace(go.bar(x=result1[]))
