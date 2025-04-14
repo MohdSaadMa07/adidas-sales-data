@@ -1,7 +1,7 @@
 # Adidas Sales Data Visualization Dashboard
 
 ## Overview
-This project provides an interactive **Sales Dashboard** for Adidas sales data. Built using **Streamlit** and **Plotly**, the dashboard enables users to visualize and analyze key sales metrics such as total sales, units sold, and operating profit across different retailers, regions, and time periods. The app allows for dynamic filtering and downloading of data in CSV format for further analysis.
+This project provides an interactive **Sales Dashboard** for Adidas sales data. Built using **Streamlit** and **Plotly**, the dashboard enables users to visualize and analyze key sales metrics such as total sales, units sold, and operating profit across different retailers, regions, and time periods. The app also allows downloading of data in CSV format for further analysis.
 
 ## Features
 - **Interactive visualizations** using Plotly.
