@@ -153,3 +153,25 @@ fig4.update_traces(textinfo="label+value")
 with col7:
     st.subheader("Total Sales by Region and City")
     st.plotly_chart(fig4, use_container_width=True)
+
+
+
+# View and download buttons
+__, view4, dwn4 = st.columns([0.1, 0.5, 0.4])
+
+
+with view4:
+    expander = st.expander("View data for Total Sales by Region and City")
+    expander.write(treemap)
+
+treemap = treemap.rename(columns={
+    "Region": "Region",
+    "City": "City",
+    "TotalSales": "Total Sales (USD)"
+})
+
+with dwn4:
+    st.download_button("Get Data",
+                       data=treemap.to_csv(index=False).encode("utf-8"),
+                       file_name="Sales_by_Region_City.csv",
+                       mime="text/csv")
