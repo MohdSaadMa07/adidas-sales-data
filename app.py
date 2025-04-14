@@ -127,5 +127,29 @@ with dwn3:
                        file_name="SalesbyUnitsSold.csv", mime="text/csv")
 
 # Divider
+
 st.divider()
 
+# Create treemap data and format sales
+_, col7 = st.columns([0.1, 1])
+treemap = df[["region", "city", "totalsales"]].groupby(by=["region", "city"])["totalsales"].sum().reset_index()
+
+# Define function to format sales in Lakhs
+def format_sales(value):
+    if value >= 0:
+        return '{:.2f} Lakh'.format(value / 1_000_00)
+
+treemap["TotalSales (Formatted)"] = treemap["totalsales"].apply(format_sales)
+
+# Create the treemap figure
+fig4 = px.treemap(treemap, path=["region", "city"], values="totalsales",
+                  hover_name="TotalSales (Formatted)",  # Fixed hover_name column
+                  hover_data=["TotalSales (Formatted)"],
+                  color="city", height=700, width=600)
+
+fig4.update_traces(textinfo="label+value")
+
+# Display the treemap in the column
+with col7:
+    st.subheader("Total Sales by Region and City")
+    st.plotly_chart(fig4, use_container_width=True)
