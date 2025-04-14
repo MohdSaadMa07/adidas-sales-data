@@ -82,8 +82,50 @@ with dwn2:
     
 st.divider()
 
-result1=df.groupby(by="state")[["TotalSales","UnitsSold"]].sum().reset_index()
+# Normalize column names
+df.columns = df.columns.str.strip().str.lower()
 
-#to add units sold as a line chart on secondary y axis
+# Group and aggregate
+result1 = df.groupby("state")[["totalsales", "unitssold"]].sum().reset_index()
+
+# Rename columns for display
+result1.rename(columns={
+    "state": "State",
+    "totalsales": "Total Sales",
+    "unitssold": "Units Sold"
+}, inplace=True)
+
+# Create the Plotly figure
 fig3 = go.Figure()
-fig3.add_trace(go.bar(x=result1[]))
+fig3.add_trace(go.Bar(x=result1["State"], y=result1["Total Sales"], name="Total Sales"))
+fig3.add_trace(go.Scatter(x=result1["State"], y=result1["Units Sold"], mode="lines",
+                          name="Units Sold", yaxis="y2"))
+
+# Update layout
+fig3.update_layout(
+    title="Total Sales and Units Sold by State",
+    xaxis=dict(title="State"),
+    yaxis=dict(title="Total Sales", showgrid=False),
+    yaxis2=dict(title="Units Sold", overlaying="y", side="right"),
+    template="gridon",
+    legend=dict(x=1, y=1)
+)
+
+# Display chart
+_, col6 = st.columns([0.1, 0.9])
+with col6:
+    st.plotly_chart(fig3, use_container_width=True)
+
+# View data and download button
+__, view3,__, dwn3 = st.columns([0.1,0.55,0.03, 0.45])
+with view3:
+    expander = st.expander("View Data for Sales by Units Sold")
+    expander.write(result1)
+
+with dwn3:
+    st.download_button("Get Data", data=result1.to_csv(index=False).encode("utf-8"),
+                       file_name="SalesbyUnitsSold.csv", mime="text/csv")
+
+# Divider
+st.divider()
+
