@@ -5,26 +5,20 @@ from PIL import Image
 import plotly.express as px
 import plotly.graph_objects as go
 
-# Reading data from Excel file
+# Reading data
 df = pd.read_excel("Adidas.xlsx")
 st.set_page_config(layout="wide")
-
-# Adding custom style for padding
 st.markdown('<style>div.block-container{padding-top:1rem;padding-left:1rem;}</style>', unsafe_allow_html=True)
 
-# Loading logo image
 image = Image.open('adidas-logo.jpg')
 
-# Create columns
 col1, col2 = st.columns([0.1, 0.6])
 
-# Add logo with padding
 with col1:
     st.markdown("<div style='padding-top: 20px; padding-left: 20px;'>", unsafe_allow_html=True)  # Add padding around the image
     st.image(image, use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
-# Custom CSS for title
 html_title = """
 <style>
     .title-test {
@@ -82,20 +76,17 @@ with dwn2:
     
 st.divider()
 
-# Normalize column names
 df.columns = df.columns.str.strip().str.lower()
 
 # Group and aggregate
 result1 = df.groupby("state")[["totalsales", "unitssold"]].sum().reset_index()
 
-# Rename columns for display
 result1.rename(columns={
     "state": "State",
     "totalsales": "Total Sales",
     "unitssold": "Units Sold"
 }, inplace=True)
 
-# Create the Plotly figure
 fig3 = go.Figure()
 fig3.add_trace(go.Bar(x=result1["State"], y=result1["Total Sales"], name="Total Sales"))
 fig3.add_trace(go.Scatter(x=result1["State"], y=result1["Units Sold"], mode="lines",
@@ -126,37 +117,32 @@ with dwn3:
     st.download_button("Get Data", data=result1.to_csv(index=False).encode("utf-8"),
                        file_name="SalesbyUnitsSold.csv", mime="text/csv")
 
-# Divider
-
 st.divider()
 
-# Create treemap data and format sales
 _, col7 = st.columns([0.1, 1])
 treemap = df[["region", "city", "totalsales"]].groupby(by=["region", "city"])["totalsales"].sum().reset_index()
 
-# Define function to format sales in Lakhs
+
 def format_sales(value):
     if value >= 0:
         return '{:.2f} Lakh'.format(value / 1_000_00)
 
 treemap["TotalSales (Formatted)"] = treemap["totalsales"].apply(format_sales)
 
-# Create the treemap figure
 fig4 = px.treemap(treemap, path=["region", "city"], values="totalsales",
-                  hover_name="TotalSales (Formatted)",  # Fixed hover_name column
+                  hover_name="TotalSales (Formatted)",  
                   hover_data=["TotalSales (Formatted)"],
                   color="city", height=700, width=600)
 
 fig4.update_traces(textinfo="label+value")
 
-# Display the treemap in the column
+# Display the treemap
 with col7:
     st.subheader("Total Sales by Region and City")
     st.plotly_chart(fig4, use_container_width=True)
 
 
-
-# View and download buttons
+# View and download button
 __, view4, dwn4 = st.columns([0.1, 0.5, 0.4])
 
 
